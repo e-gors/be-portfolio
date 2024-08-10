@@ -28,4 +28,24 @@ class UserController extends Controller
     {
         $user->delete();
     }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+        if (!auth()->attempt($credentials)) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Invalid credentials'
+            ]);
+        }
+        $user = auth()->user();
+        $token = $user->createToken('auth_token')->accessToken;
+        return response()->json([
+            'status' => 200,
+            'token' => $token
+        ]);
+    }
 }
