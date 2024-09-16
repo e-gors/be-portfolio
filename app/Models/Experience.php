@@ -5,12 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Resume extends Model
+class Experience extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'file_type',
-        'file_path',
+        'title',
+        'description',
+        'start_date',
+        'end_date',
     ];
 }

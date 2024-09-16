@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateResumesTable extends Migration
+class CreateProjectsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,13 @@ class CreateResumesTable extends Migration
      */
     public function up()
     {
-        Schema::create('resumes', function (Blueprint $table) {
+        Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->string('file_type'); // for dev resume or none dev
-            $table->string('file_path');
+            $table->string('type');
+            $table->string('name');
+            $table->string('link');
+            $table->string('picture');
+            $table->text('description');
             $table->timestamps();
         });
     }
@@ -28,6 +31,6 @@ class CreateResumesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('resumes');
+        Schema::dropIfExists('projects');
     }
 }

@@ -11,13 +11,25 @@ class ResumeController extends Controller
 {
     public function index()
     {
-        $resumes = Resume::query()->orderBy('created_at', 'desc')->get();
-        return view('resume.index', compact('resumes'));
+        // Get all resumes ordered by created_at in descending order
+        $allResumes = Resume::query()->orderBy('created_at', 'desc')->get();
+
+        // Group resumes by file_type and get the latest one for each type
+        $latestResumes = $allResumes->groupBy('file_type')->map(function ($group) {
+            return $group->first(); // Get the most recent resume in each group
+        });
+
+        return response()->json([
+            'status' => 200,
+            'resumes' => $latestResumes->values() // Convert the collection to an array
+        ]);
     }
+
 
     public function store(Request $request)
     {
         $request->validate([
+            'type' => 'required|in:Dev, Non Dev',
             'resume' => 'required|file|mimes:pdf,doc,docx|max:2048',
         ]);
 
@@ -25,15 +37,8 @@ class ResumeController extends Controller
         $file = $request->file('resume');
         $filePath = $file->store('resumes', 'public');
 
-        // Delete old resume if exists
-        $oldResume = Resume::where('user_id', $userId)->first();
-        if ($oldResume) {
-            Storage::disk('public')->delete($oldResume->file_path);
-            $oldResume->delete();
-        }
-
         $resume = Resume::create([
-            'user_id' => $userId,
+            'file_type' => $request->type,
             'file_path' => $filePath,
         ]);
 

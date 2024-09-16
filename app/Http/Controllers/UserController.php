@@ -3,50 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\UserCollection;
 
 class UserController extends Controller
 {
     public function index()
     {
-        return UserResource::collection(User::all());
+        return new UserCollection(User::all());
     }
 
-    public function create(Request $request)
+    public function store(Request $request)
     {
-        return new UserResource(User::create($request->all()));
+        //
     }
 
-    public function update(Request $request, User $user)
+    public function update(UserRequest $request, User $user)
     {
-        $user->update($request->all());
+        $data = $request->validated();
+
+        $user->update($data);
         return new UserResource($user);
     }
 
     public function destory(User $user)
     {
         $user->delete();
-    }
-
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
-        if (!auth()->attempt($credentials)) {
-            return response()->json([
-                'status' => 401,
-                'message' => 'Invalid credentials'
-            ]);
-        }
-        $user = auth()->user();
-        $token = $user->createToken('auth_token')->accessToken;
-        return response()->json([
-            'status' => 200,
-            'token' => $token,
-            'user' => $user
-        ]);
     }
 }
