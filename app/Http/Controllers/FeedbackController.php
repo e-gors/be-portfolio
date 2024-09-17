@@ -19,6 +19,7 @@ class FeedbackController extends Controller
     public function index(Request $request)
     {
         $search = $request->query('search');
+        $status = $request->query('status');
 
         $filter = new FeedbackQuery();
         $queryItems = $filter->transform($request);
@@ -35,6 +36,11 @@ class FeedbackController extends Controller
             $query->where('guest_name', 'LIKE', "%$search%")
                 ->orWhere('project', 'LIKE', "%$search%")
                 ->orWhere('message', 'LIKE', "%$search%");
+        }
+
+        // if status is present in query
+        if(isset($status)){
+            $query->where('status', $status);
         }
 
         // Paginate the results and append query params to pagination links
