@@ -6,6 +6,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ResumeController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\ServiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +27,7 @@ Route::post('login', [Controller::class, 'login']);
 Route::post('register', [Controller::class, 'register']);
 Route::post('feedbacks', [FeedbackController::class, 'store']);
 Route::get('feedbacks', [FeedbackController::class, 'index']);
-
+Route::get('services', [ServiceController::class, 'index']);
 Route::get('roles', [RoleController::class, 'index']);
 
 // download latest resume
@@ -37,4 +38,5 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('resume', ResumeController::class)->except('downloadLatest');
     Route::apiResource('feedbacks', FeedbackController::class)->except('store', 'index');
     Route::apiResource('roles', FeedbackController::class)->except('index');
+    Route::apiResource('services', ServiceController::class)->except('index');
 });
