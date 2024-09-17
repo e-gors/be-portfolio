@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FeedbackRequest extends FormRequest
+class ExperienceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,22 +24,24 @@ class FeedbackRequest extends FormRequest
     public function rules()
     {
         return [
-            'profileImage' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
-            'guestName' => 'nullable|string',
-            'project' => 'required|string',
-            'message' => 'required|string|min:400|max:600',
-            'rating' => 'required|numeric|min:1|max:5'
+            'title' => 'required|string',
+            'description' => 'required|string|min:350|max:700',
+            'companyLogo' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'link' => 'required|string|regex:/^(http:\/\/|https:\/\/)/',
+            'startDate' => 'required|date',
+            'endDate' => 'nullable|date|after_or_equal:startDate'
         ];
     }
 
-     /**
+      /**
      * Prepare the data for validation.
      */
     protected function prepareForValidation()
     {
         $this->merge([
-            'profile_image' => $this->profilePicture,
-            'guest_name' => $this->guestName,
+            'company_logo' => $this->companyLogo,
+            'start_date' => $this->startDate,
+            'end_date' => $this->endDate,
         ]);
     }
 }

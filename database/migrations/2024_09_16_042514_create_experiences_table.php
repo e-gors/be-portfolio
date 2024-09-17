@@ -17,6 +17,8 @@ class CreateExperiencesTable extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
+            $table->string('company_logo');
+            $table->string('link')->nullable();
             $table->date('start_date');
             $table->date('end_date')->nullable();
             $table->timestamps();

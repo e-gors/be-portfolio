@@ -73,7 +73,7 @@ class FeedbackController extends Controller
 
         // If not authenticated, set userId to null and handle guest_name
         $userId = null;
-        $guestName = $request->input('guest_name', 'Guest'); // Provide default guest name if not provided
+        $guestName = $request->input('guestName', 'Guest'); // Provide default guest name if not provided
 
         // Check if feedback for the project already exists
         $oldFeedback = Feedback::where('project', $feedbackData['project'])->first();
@@ -84,8 +84,8 @@ class FeedbackController extends Controller
 
         // Handle file upload
         $filePath = null;
-        if ($request->hasFile('profile')) {
-            $file = $request->file('profile');
+        if ($request->hasFile('profileImage')) {
+            $file = $request->file('profileImage');
             $filePath = $file->store('public/profiles'); // Store file and get path
         }
 

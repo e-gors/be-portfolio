@@ -12,6 +12,8 @@ class Experience extends Model
     protected $fillable = [
         'title',
         'description',
+        'company_logo',
+        'link',
         'start_date',
         'end_date',
     ];
