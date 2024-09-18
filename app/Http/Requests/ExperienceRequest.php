@@ -24,21 +24,24 @@ class ExperienceRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|string',
+            'jobPosition' => 'required|string',
+            'companyName' => 'required|string',
             'description' => 'required|string|min:350|max:700',
-            'companyLogo' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-            'link' => 'required|string|regex:/^(http:\/\/|https:\/\/)/',
-            'startDate' => 'required|date',
-            'endDate' => 'nullable|date|after_or_equal:startDate'
+            'companyLogo' => 'nullable|file|mimes:jpg,jpeg,png, svg|max:2048',
+            'link' => ['nullable', 'string', 'regex:/^(http:\/\/|https:\/\/)/'],
+            'startDate' => ['required', 'regex:/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}$/'],
+            'endDate' => ['nullable', 'regex:/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}$/', 'after_or_equal:startDate']
         ];
     }
 
-      /**
+    /**
      * Prepare the data for validation.
      */
     protected function prepareForValidation()
     {
         $this->merge([
+            'job_position' => $this->jobPosition,
+            'company_name' => $this->companyName,
             'company_logo' => $this->companyLogo,
             'start_date' => $this->startDate,
             'end_date' => $this->endDate,

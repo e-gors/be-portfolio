@@ -24,9 +24,12 @@ class ExperienceController extends Controller
 
         // if search has value
         if (isset($search)) {
-            $query->where('title', 'LIKE', "%$search%")
+            $query->where('job_position', 'LIKE', "%$search%")
+                ->orWhere('company_name', 'LIKE', "%$search%")
                 ->orWhere('description', 'LIKE', "%$search%");
         }
+
+        $query->orderBy('end_date', 'desc');
 
         // Paginate the results and append query params to pagination links
         $paginatedResults = $this->paginated($query, $request)->appends($request->query());
@@ -53,11 +56,12 @@ class ExperienceController extends Controller
      */
     public function store(Request $request, ExperienceRequest $experienceRequest)
     {
-        // Validate the feedback request
+        // Validate the experience request
         $experienceData = $experienceRequest->validated();
 
-        // Check if feedback for the project already exists
-        $oldExperience = Experience::where('title', $experienceData['title'])->first();
+        // Check if already exists
+        $oldExperience = Experience::where('job_position', $experienceData['jobPosition'])
+            ->where('company_name', $experienceData['companyName'])->first();
 
         if ($oldExperience) {
             return response()->json(['status' => 401, 'message' => "You have already submitted this experience!"]);
@@ -74,19 +78,20 @@ class ExperienceController extends Controller
 
         // Create new feedback entry
         $experience = Experience::create([
-            'title' => $experienceData['title'],
+            'job_position' => $experienceData['jobPosition'],
+            'company_name' => $experienceData['companyName'],
             'description' => $experienceData['description'],
-            'link' => $experienceData['link'],
+            'link' => $experienceData['link'] ?? null,
             'start_date' => $experienceData['startDate'],
             'end_date' => $experienceData['endDate'] ?? null,
-            'company_logo' => $fileUrl, // Save file path or URL
+            'company_logo' => $fileUrl ?? null, // Save file path or URL
         ]);
 
         if (isset($experience)) {
             return response()->json([
                 'status' => 201,
                 'message' => 'Experience submitted successfully!',
-                'feedback' => new ExperienceResource($experience),
+                'experience' => new ExperienceResource($experience),
             ]);
         } else {
             return response()->json([

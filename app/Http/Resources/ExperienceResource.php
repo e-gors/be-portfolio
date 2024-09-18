@@ -16,12 +16,13 @@ class ExperienceResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
+            'jobPosition' => $this->job_position,
+            'companyName' => $this->company_name,
             'description' => $this->description,
             'companyLogo' => $this->companyLogo,
             'link' => $this->link,
-            'startDate' => $this->start_date->format('F j, Y'),
-            'endDate' => $this->end_date->format('F j, Y'),
+            'startDate' => $this->start_date,
+            'endDate' => $this->end_date ?? "Now",
             'createdAt' => $this->created_at->format('F j, Y'),
             'updatedAt' => $this->updated_at->format('F j, Y'),
         ];

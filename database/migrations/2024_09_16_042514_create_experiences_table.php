@@ -15,12 +15,13 @@ class CreateExperiencesTable extends Migration
     {
         Schema::create('experiences', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('job_position');
+            $table->string('company_name');
             $table->text('description');
-            $table->string('company_logo');
+            $table->string('company_logo')->nullable();
             $table->string('link')->nullable();
-            $table->date('start_date');
-            $table->date('end_date')->nullable();
+            $table->string('start_date');
+            $table->string('end_date')->nullable();
             $table->timestamps();
         });
     }
