@@ -7,11 +7,13 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
+use App\Mail\ContactMail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Mail;
 
 class Controller extends BaseController
 {
@@ -68,5 +70,33 @@ class Controller extends BaseController
         $data['password'] = Hash::make($data['password']);
 
         return new UserResource(User::create($data));
+    }
+
+    public function sendContactMail(Request $request)
+    {
+        // Validate incoming request data
+        $data = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'message' => 'required|string|min:10|max:1000',
+        ]);
+
+        try {
+            // Send email to the specified recipient
+            Mail::to(env('MAIL_SEND_TO'))->send(new ContactMail($data));
+
+            // Return a success response
+            return response()->json([
+                'status' => 201,
+                'message' => 'Your message has been sent successfully!'
+            ]);
+        } catch (\Exception $err) {
+            // Return an error response with the message key
+            return response()->json([
+                'status' => 500,
+                'message' => 'There was an error sending your message. Please try again later.',
+                'error' => $err->getMessage()  // Optionally include the error message for debugging
+            ]);
+        }
     }
 }

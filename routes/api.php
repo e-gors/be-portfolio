@@ -37,6 +37,9 @@ Route::get('roles', [RoleController::class, 'index']);
 // download latest resume
 Route::get('resume/latest/download', [ResumeController::class, 'downloadLatest']);
 
+// send emails to my email
+Route::post('contacts', [Controller::class, 'sendContactMail']);
+
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('users', UserController::class)->except('store');
     Route::apiResource('resume', ResumeController::class)->except('downloadLatest');
