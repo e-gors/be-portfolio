@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Project;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProjectResource extends JsonResource
@@ -21,6 +22,7 @@ class ProjectResource extends JsonResource
             'link' => $this->link,
             'picture' => $this->picture,
             'description' => $this->description,
+            'totalProjects' => Project::count(),
             'createdAt' => $this->created_at->format('F j, Y'),
             'updatedAt' => $this->updated_at->format('F j, Y'),
         ];

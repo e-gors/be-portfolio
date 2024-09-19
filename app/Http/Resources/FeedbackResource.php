@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Feedback;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class FeedbackResource extends JsonResource
@@ -14,7 +15,6 @@ class FeedbackResource extends JsonResource
      */
     public function toArray($request)
     {
-
         return [
             'id' => $this->id,
             'userId' => $this->user_id,
@@ -24,9 +24,10 @@ class FeedbackResource extends JsonResource
             'message' => $this->message,
             'status' => $this->status,
             'rating' => $this->rating,
+            'rates' => Feedback::sum('rating') / Feedback::count(), // total ratings
+            'reviews' => Feedback::count(), // total reviews
             'createdAt' => $this->created_at->format('F j, Y'),
-            'updatedAt' => $this->updated_at->format('F j, Y'),
-            'user' => $this->whenLoaded('user')
+            'updatedAt' => $this->updated_at->format('F j, Y')
         ];
     }
 }

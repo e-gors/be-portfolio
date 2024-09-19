@@ -28,8 +28,10 @@ use App\Http\Controllers\ServiceController;
 Route::post('login', [Controller::class, 'login']);
 Route::post('register', [Controller::class, 'register']);
 
-// public or homepage display
+// creating feedback from guest
 Route::post('feedbacks', [FeedbackController::class, 'store']);
+
+// public or homepage display
 Route::get('feedbacks', [FeedbackController::class, 'index']);
 Route::get('services', [ServiceController::class, 'index']);
 Route::get('projects', [ProjectController::class, 'index']);
