@@ -17,6 +17,7 @@ class CreateResumesTable extends Migration
             $table->id();
             $table->string('file_type'); // for dev resume or none dev
             $table->string('file_path');
+            $table->string('original_name');
             $table->timestamps();
         });
     }

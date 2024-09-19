@@ -38,7 +38,7 @@ Route::get('experiences', [ExperienceController::class, 'index']);
 Route::get('roles', [RoleController::class, 'index']);
 
 // download latest resume
-Route::get('resume/latest/download', [ResumeController::class, 'downloadLatest']);
+Route::get('resume/download', [ResumeController::class, 'downloadLatest']);
 
 // send emails to my email
 Route::post('contacts', [Controller::class, 'sendContactMail']);

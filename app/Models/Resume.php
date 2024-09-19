@@ -12,5 +12,6 @@ class Resume extends Model
     protected $fillable = [
         'file_type',
         'file_path',
+        'original_name'
     ];
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Resume;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -25,33 +26,68 @@ class ResumeController extends Controller
         ]);
     }
 
-
     public function store(Request $request)
     {
-        $request->validate([
-            'type' => 'required|in:Dev, Non Dev',
-            'resume' => 'required|file|mimes:pdf,doc,docx|max:2048',
-        ]);
+        try {
+            // Validate the incoming request
+            $request->validate([
+                'type' => 'required|in:Dev,Non Dev',
+                'resume' => 'required|file|mimes:pdf,doc,docx|max:2048',
+            ]);
 
-        $userId = Auth::id(); // Assuming user is logged in
-        $file = $request->file('resume');
-        $filePath = $file->store('resumes', 'public');
+            // Store the file and ensure a unique filename to avoid collisions
+            $file = $request->file('resume');
+            $filePath = $file->store('public/resumes'); // Store file and get path
+            $originalFileName = $file->getClientOriginalName(); // Get the original file name
 
-        $resume = Resume::create([
-            'file_type' => $request->type,
-            'file_path' => $filePath,
-        ]);
+            // Create a new Resume record in the database
+            $resume = Resume::create([
+                'file_type' => $request->type,
+                'file_path' => $filePath,
+                'original_name' => $originalFileName
+            ]);
 
-        return response()->json($resume, 201);
+            if ($resume) {
+                // Return a success response with the resume data
+                return response()->json([
+                    'status' => 201,
+                    'message' => 'Resume uploaded successfully.',
+                    'resume' => $resume,
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 500,
+                    'message' => 'Failed to upload resume!',
+                ]);
+            }
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => $error->getMessage(),
+            ]);
+        }
     }
 
-    public function download()
+    public function downloadLatest()
     {
-        // Get the latest resume based on the created_at timestamp
+        // Get the latest resume
         $resume = Resume::latest('created_at')->firstOrFail();
 
-        return Storage::disk('public')->download($resume->file_path);
+        // Build the full path to the file
+        $filePath = storage_path('/app/' . $resume->file_path);
+
+        // Check if the file exists on disk before attempting to download
+        if (!file_exists($filePath)) {
+            return response()->json(['message' => 'File not found.'], 404);
+        }
+
+        // Return the file for download with the original name
+        return response()->download($filePath, $resume->original_name, [
+            'Content-Type' => mime_content_type($filePath),
+            'Content-Disposition' => 'attachment; filename="' . $resume->original_name . '"',
+        ]);
     }
+
 
     public function destroy($id)
     {
