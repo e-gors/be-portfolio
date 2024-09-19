@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ServiceRequest;
 use App\Http\Resources\ServiceResource;
 use App\Http\Resources\ServiceCollection;
+use Exception;
 
 class ServiceController extends Controller
 {
@@ -108,16 +109,9 @@ class ServiceController extends Controller
      * @param  \App\Models\Service  $service
      * @return \Illuminate\Http\Response
      */
-    public function update(ServiceRequest $request, Service $service)
+    public function update(Request $request, Service $service)
     {
-        return $request->validated();
-
-        // Check if feedback for the project already exists
-        $oldService = Service::where('service', $service['service'])->first();
-
-        if ($oldService) {
-            return response()->json(['status' => 401, 'message' => "You have already submitted this service!"]);
-        }
+        $descriptions = $request->input('descriptions');
 
         try {
             // Initialize variables
@@ -128,16 +122,15 @@ class ServiceController extends Controller
                 $file = $request->file('image');
                 $filePath = $file->store('public/images'); // Store file and get path
                 $fileUrl = url('storage/' . str_replace('public/', '', $filePath)); // Generate URL
-            } else {
-                // If no new file is uploaded, use the existing image URL
-                if ($request->input('image') && filter_var($request->input('image'), FILTER_VALIDATE_URL)) {
-                    $fileUrl = $request->input('image'); // Use URL provided in the request
-                }
             }
 
+            // Ensure descriptions is handled as an array
+            $descriptionsArray = $request->input('descriptions') ? explode(',', $request->input('descriptions')) : [];
+
             // Prepare update data
-            $updateData = $request->only(['service', 'descriptions']);
+            $updateData = $request->only(['service']);
             $updateData['image'] = $fileUrl; // Set the new image URL or existing one
+            $updateData['descriptions'] = json_encode($descriptionsArray);
 
             // Update the service
             $updated = $service->update($updateData);
@@ -164,7 +157,24 @@ class ServiceController extends Controller
 
     public function destroy(Service $service)
     {
-        $service->delete();
-        return response()->json(['message' => 'Service deleted successfully'], 200);
+        try {
+            $deleted = $service->delete();
+            if ($deleted) {
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Service deleted successfully'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 500,
+                    'message' => 'Failed to delete service!'
+                ]);
+            }
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'There was an error while deleting this service!'
+            ]);
+        }
     }
 }
