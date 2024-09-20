@@ -15,6 +15,7 @@ class CreateProjectsTable extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
+            $table->enum('client_type', ['local', 'worldwide']);
             $table->string('type');
             $table->string('name');
             $table->string('link')->nullable();

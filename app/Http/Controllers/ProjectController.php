@@ -74,6 +74,7 @@ class ProjectController extends Controller
 
         // Create new feedback entry
         $project = Project::create([
+            'client_type' => $projectData['clientType'],
             'type' => $projectData['type'],
             'name' => $projectData['name'],
             'link' => $projectData['link'],
