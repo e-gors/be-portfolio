@@ -40,7 +40,7 @@ class Controller extends BaseController
         }
 
         $user = auth()->user();
-        $token = $user->createToken('auth_token')->accessToken;
+        $token = $user->createToken('APP_URL')->accessToken;
 
         return response()->json([
             'status' => 200,
