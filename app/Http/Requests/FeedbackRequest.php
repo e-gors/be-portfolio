@@ -27,7 +27,7 @@ class FeedbackRequest extends FormRequest
             'profileImage' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
             'guestName' => 'nullable|string',
             'project' => 'required|string',
-            'message' => 'required|string|min:400|max:600',
+            'message' => 'required|string|min:200|max:600',
             'rating' => 'required|numeric|min:1|max:5'
         ];
     }
