@@ -8,6 +8,7 @@ use App\Http\Requests\FeedbackRequest;
 use App\Http\Resources\FeedbackResource;
 use App\Http\Resources\FeedbackCollection;
 use App\Services\V1\FeedbackQuery;
+use Exception;
 
 class FeedbackController extends Controller
 {
@@ -39,7 +40,7 @@ class FeedbackController extends Controller
         }
 
         // if status is present in query
-        if(isset($status)){
+        if (isset($status)) {
             $query->where('status', $status);
         }
 
@@ -146,8 +147,19 @@ class FeedbackController extends Controller
      */
     public function update(Request $request, Feedback $feedback)
     {
-        $feedback->update($request->all());
-        return new FeedbackResource($feedback);
+        try {
+            $updated = $feedback->update($request->all());
+            return response()->json([
+                'status' => 200,
+                'message' => "Feedback is " . $request->status . "!",
+                'feedback' => new FeedbackResource($updated)
+            ]);
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => $error->getMessage(),
+            ]);
+        }
     }
 
     /**
